@@ -11,12 +11,29 @@ namespace AuthenticationAPP
 {
     public class Startup
     {
+        public static OAuthBearerAuthenticationOptions OAuthBearerOptions { get; private set; }
+
+        public Startup()
+        {
+            OAuthBearerOptions = new OAuthBearerAuthenticationOptions();
+        }
+
         public void Configuration(IAppBuilder app)
         {
-            // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=316888
+            HttpConfiguration config = new HttpConfiguration();
+
+            ConfigureOAuth(app);
+            app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+            app.UseWebApi(config);
+
+            WebApiConfig.Register(config);
+
+        }
+        public void ConfigureOAuth(IAppBuilder app)
+         {
             app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
             var myProvider = new MyAuthorizationServerProvider();
-            var OAuthOptions = new OAuthAuthorizationServerOptions
+            OAuthAuthorizationServerOptions OAuthOptions = new OAuthAuthorizationServerOptions
             {
                 AllowInsecureHttp = true,//https version for secured.
                 TokenEndpointPath = new PathString("/token"),
@@ -27,10 +44,8 @@ namespace AuthenticationAPP
 
            
             app.UseOAuthAuthorizationServer(OAuthOptions);
-            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
-
-            HttpConfiguration config = new HttpConfiguration();
-            WebApiConfig.Register(config);
+            app.UseOAuthBearerAuthentication(OAuthBearerOptions);
+            
         }
     }
 }
