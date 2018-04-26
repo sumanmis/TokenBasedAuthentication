@@ -11,6 +11,9 @@ using Microsoft.Owin.Security.OAuth;
 using System.Web;
 using System.Collections;
 using System.Text;
+using Newtonsoft.Json.Linq;
+using AuthenticationAPP.Models;
+using System.Net.Http.Headers;
 
 namespace AuthenticationAPP.Controllers
 {
@@ -45,7 +48,7 @@ namespace AuthenticationAPP.Controllers
             return Ok("Hello" + identity.Name + "Role " + string.Join(",", (roles.ToList())));
         }
         /// <summary>
-        /// Harmony call api.As of now post string
+        /// As of now post string
         /// </summary>
         /// <returns></returns>
         [Authorize(Roles = "admin")]
@@ -53,12 +56,16 @@ namespace AuthenticationAPP.Controllers
         [Route("api/data/CallApi")]
         public IHttpActionResult CallApi()
         {
+
+            
+           
             WebRequest request = WebRequest.Create(WebApiNewsEndPoint);
             request.Method = "POST";
-            if(HttpRuntime.Cache["TOKEN"] !=null)
+            if (HttpRuntime.Cache["TOKEN"] != null)
             {
                 request.Headers.Add("Authorization", "Bearer " + HttpRuntime.Cache.Get("TOKEN"));
             }
+
             string postData = "This is a test that posts this string to a Web server.";
             byte[] byteArray = Encoding.UTF8.GetBytes(postData);
             request.ContentType = "application/x-www-form-urlencoded";
@@ -75,8 +82,8 @@ namespace AuthenticationAPP.Controllers
             response.Close();
             return Ok(response);
         }
-
-
+      
+        
 
     }
 }
